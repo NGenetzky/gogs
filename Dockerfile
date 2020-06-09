@@ -1,11 +1,24 @@
-FROM golang:alpine AS binarybuilder
+# https://www.balena.io/docs/reference/base-images/base-images/
+# ARG BUILD_FROM=balenalib/<hw>-<distro>-<lang_stack>:<lang_ver>-<distro_ver>-(build|run)-<yyyymmdd>
+# https://hub.docker.com/r/balenalib/amd64-alpine-golang
+
+ARG BUILD_FROM0=balenalib/amd64-alpine-golang:1-3.11-20200604
+# ARG BUILD_FROM0=golang:alpine
+
+# TODO: 'alpine:3.12' removes 'python2'. So we choose '3.11'
+# ARG BUILD_FROM1=balenalib/amd64-alpine:3.12-run-20200604 # TODO
+ARG BUILD_FROM1=balenalib/amd64-alpine:3.11-run-20200604
+# ARG BUILD_FROM1=alpine:latest
+
+FROM ${BUILD_FROM0} AS binarybuilder
+
 # Install build deps
 RUN apk --no-cache --no-progress add --virtual build-deps build-base git linux-pam-dev python py-pip
 WORKDIR /go/src/github.com/G-Node/gogs
 COPY . .
 RUN make build TAGS="sqlite cert pam"
 
-FROM alpine:latest
+FROM ${BUILD_FROM1}
 # Install system utils & Gogs runtime dependencies
 ADD https://github.com/tianon/gosu/releases/download/1.10/gosu-amd64 /usr/sbin/gosu
 RUN chmod +x /usr/sbin/gosu \
