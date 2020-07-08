@@ -12,3 +12,11 @@ services:
     restart: always
     volumes:
       - 'resin-data:/data'
+
+  traefik:
+    build: ./balena/traefik
+    network_mode: host
+    ports:
+      - "80:80"
+    labels:
+      - "io.balena.features.balena-socket=true"
