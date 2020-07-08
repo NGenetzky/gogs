@@ -1,0 +1,20 @@
+[http]
+
+[http.routers]
+
+[http.routers.to-homeassistant]
+rule = "Host(`homeassistant.ACME_DOMAIN`)"
+service = "homeassistant"
+middlewares = ["hsts-header"]
+
+# change the certresolver from 'staging' to 'prod'
+# once you're sure everything is working
+[http.routers.to-homeassistant.tls]
+certresolver = "staging"
+
+[http.services]
+
+[http.services.homeassistant.loadBalancer]
+
+[[http.services.homeassistant.loadBalancer.servers]]
+url = "http://192.168.8.4"
